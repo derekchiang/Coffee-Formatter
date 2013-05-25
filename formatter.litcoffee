@@ -136,6 +136,7 @@ Firstly, we read the file line by line:
         new Lazy(fs.createReadStream filename, encoding: 'utf8')
           .lines
           .forEach (line) ->
+            line = String(line)
             newLine = line
 
 `newLine` is used to hold a processed line.  `file` is used to hold the processed file.

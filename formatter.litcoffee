@@ -52,10 +52,10 @@ Given a line and an index, the function determines whether or not the index is i
           subLine = line.substr (i + 1)
           for cc, ii in subLine
             if cc == c
-              if i <= index <= ii
+              if i <= index <= (ii + i + 1)
                 return true
               else
-                return notInString (index - (ii + 1)), (line.substr (ii + 1))
+                return inString (index - (ii + 1)), (line.substr (ii + 1))
 
       return false
 
@@ -97,11 +97,23 @@ The boolean logic is much more complex than I would like.  It should be refactor
 
 This method shortens consecutive spaces into one single space.
 
+Note that the function should not shorten indentations.
+
     shortenSpaces = (line) ->
       prevChar = null
       newLine = ''
+
+      for c, i in line
+        if c == ' '
+          newLine += c
+        else
+          line = line.substring(i)
+          break
+
       for c, i in line
         unless notInString(i, line) and (c == ' ' == prevChar)
+          console.log notInString(i, line)
+          console.log c
           newLine = newLine + c
         prevChar = c
 
@@ -147,17 +159,18 @@ Now we add spaces before and after a binary operator, using the helper function:
 
 Do the same for single-space operators:
 
-            for operator in ONE_SPACE_OPERATORS
-              newLine = formatOneSpaceOperator operator, newLine
+            newLine = formatOneSpaceOperator newLine
 
 Shorten any consecutive spaces into a single space:
 
             newLine = shortenSpaces newLine
-            file += newLine
+            file += newLine + '\n'
 
 After the `forEach` completes, we have a file that is formatted line by line.  However, a comprehensive formatter needs to consider the code in a block level.  Specifically:
 
 * Indentation should be formatted according to the parameters specified by the user.
+
+This haven't been implemented yet.
 
 ### Exports
 
@@ -165,3 +178,4 @@ The following exports are for testing only and should be commented out in produc
 
     module.exports.shortenSpaces = shortenSpaces
     module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator
+    module.exports.notInString = notInString

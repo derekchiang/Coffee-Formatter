@@ -23,10 +23,10 @@
         for (ii = _j = 0, _len1 = subLine.length; _j < _len1; ii = ++_j) {
           cc = subLine[ii];
           if (cc === c) {
-            if ((i <= index && index <= ii)) {
+            if ((i <= index && index <= (ii + i + 1))) {
               return true;
             } else {
-              return notInString(index - (ii + 1), line.substr(ii + 1));
+              return inString(index - (ii + 1), line.substr(ii + 1));
             }
           }
         }
@@ -77,13 +77,24 @@
   };
 
   shortenSpaces = function(line) {
-    var c, i, newLine, prevChar, _i, _len;
+    var c, i, newLine, prevChar, _i, _j, _len, _len1;
 
     prevChar = null;
     newLine = '';
     for (i = _i = 0, _len = line.length; _i < _len; i = ++_i) {
       c = line[i];
+      if (c === ' ') {
+        newLine += c;
+      } else {
+        line = line.substring(i);
+        break;
+      }
+    }
+    for (i = _j = 0, _len1 = line.length; _j < _len1; i = ++_j) {
+      c = line[i];
       if (!(notInString(i, line) && ((c === ' ' && ' ' === prevChar)))) {
+        console.log(notInString(i, line));
+        console.log(c);
         newLine = newLine + c;
       }
       prevChar = c;
@@ -103,16 +114,14 @@
       new Lazy(fs.createReadStream(filename, {
         encoding: 'utf8'
       })).lines.forEach(function(line) {
-        var newLine, operator, _j, _len1;
+        var newLine;
 
+        line = String(line);
         newLine = line;
         newLine = formatTwoSpaceOperator(newLine);
-        for (_j = 0, _len1 = ONE_SPACE_OPERATORS.length; _j < _len1; _j++) {
-          operator = ONE_SPACE_OPERATORS[_j];
-          newLine = formatOneSpaceOperator(operator, newLine);
-        }
+        newLine = formatOneSpaceOperator(newLine);
         newLine = shortenSpaces(newLine);
-        return file += newLine;
+        return file += newLine + '\n';
       });
     }
   }
@@ -120,5 +129,7 @@
   module.exports.shortenSpaces = shortenSpaces;
 
   module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator;
+
+  module.exports.notInString = notInString;
 
 }).call(this);

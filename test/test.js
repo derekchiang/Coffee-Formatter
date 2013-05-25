@@ -15,15 +15,23 @@
         formattedLine = formatter.shortenSpaces(originalLine);
         return assert.strictEqual('hello derek how is it going?', formattedLine);
       });
-      return it('should work with strings', function() {
+      it('should work with strings', function() {
         var formattedLine, originalLine;
 
         originalLine = 'for c, i in "Hello  World!"';
         formattedLine = formatter.shortenSpaces(originalLine);
-        return assert.strictEqual('for c, i in "Hello  World!"', formattedLine);
+        console.log(formattedLine);
+        return assert.strictEqual(originalLine, formattedLine);
+      });
+      return it('should not shorten indentations', function() {
+        var formattedLine, originalLine;
+
+        originalLine = '    for c, i  in "Hello  World"';
+        formattedLine = formatter.shortenSpaces(originalLine);
+        return assert.strictEqual('    for c, i in "Hello  World"', formattedLine);
       });
     });
-    return describe('#formatTwoSpaceOperator()', function() {
+    describe('#formatTwoSpaceOperator()', function() {
       return it('should make it so that there is only\
           one space before and after a binary operator', function() {
         var formattedLine, originalLine;
@@ -31,6 +39,15 @@
         originalLine = 'k = 1+1-  2>=3<=  4>5   <6';
         formattedLine = formatter.formatTwoSpaceOperator(originalLine);
         return assert.strictEqual('k = 1 + 1 - 2 >= 3 <= 4 > 5 < 6', formattedLine);
+      });
+    });
+    return describe('#notInString()', function() {
+      return it('should detect if a char is in a string', function() {
+        var inStringIndex, originalLine;
+
+        originalLine = 'for c, i in "Hello World"';
+        inStringIndex = originalLine.indexOf('Hello');
+        return assert.strictEqual(formatter.notInString(inStringIndex, originalLine), false);
       });
     });
   });

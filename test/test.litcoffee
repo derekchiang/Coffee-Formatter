@@ -29,7 +29,15 @@ To run the test suite:
         it 'should work with strings', ->
           originalLine = 'for c, i in "Hello  World!"'
           formattedLine = formatter.shortenSpaces originalLine
-          assert.strictEqual 'for c, i in "Hello  World!"',
+          console.log formattedLine
+          assert.strictEqual originalLine,
+            formattedLine
+
+        it 'should not shorten indentations', ->
+          originalLine = '    for c, i  in "Hello  World"'
+          formattedLine = formatter.shortenSpaces originalLine
+          # console.log formattedLine
+          assert.strictEqual '    for c, i in "Hello  World"',
             formattedLine
 
       describe '#formatTwoSpaceOperator()', ->
@@ -40,3 +48,10 @@ To run the test suite:
           assert.strictEqual 'k = 1 + 1 - 2 >= 3 <= 4 > 5 < 6',
             formattedLine
 
+      describe '#notInString()', ->
+        it 'should detect if a char is in a string', ->
+          originalLine = 'for c, i in "Hello World"'
+          inStringIndex = originalLine.indexOf('Hello')
+          # console.log inStringIndex
+          assert.strictEqual (formatter.notInString inStringIndex, originalLine),
+            false

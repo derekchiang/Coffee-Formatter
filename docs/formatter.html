@@ -67,7 +67,28 @@ fs = require <span class="string">'fs'</span></pre></div>
       
         
         <h3>Helper Functions</h3>
-<p><code>getExtension()</code> returns the extension of a filename, excluding the dot.</p>
+<p>Given a line and an index, the function determines whether or not the index is inside of a CoffeeScript string.</p>
+
+        
+          <div class='highlight'><pre><span class="function"><span class="title">inString</span></span> = (index, line) -&gt;
+  <span class="keyword">for</span> c, i <span class="keyword">in</span> line
+    <span class="keyword">if</span> c == <span class="string">"'"</span> <span class="keyword">or</span> c == <span class="string">'"'</span>
+      subLine = line.substr (i + <span class="number">1</span>)
+      <span class="keyword">for</span> cc, ii <span class="keyword">in</span> subLine
+        <span class="keyword">if</span> cc == c
+          <span class="keyword">if</span> i &lt;= index &lt;= ii
+            <span class="keyword">return</span> <span class="literal">true</span>
+          <span class="keyword">else</span>
+            <span class="keyword">return</span> notInString (index - (ii + <span class="number">1</span>)), (line.substr (ii + <span class="number">1</span>))
+
+  <span class="keyword">return</span> <span class="literal">false</span>
+
+<span class="function"><span class="title">notInString</span></span> = (index, line) -&gt;
+  <span class="keyword">return</span> <span class="keyword">not</span> inString(index, line)</pre></div>
+        
+      
+        
+        <p><code>getExtension()</code> returns the extension of a filename, excluding the dot.</p>
 
         
           <div class='highlight'><pre><span class="function"><span class="title">getExtension</span></span> = (filename) -&gt;
@@ -76,14 +97,38 @@ fs = require <span class="string">'fs'</span></pre></div>
         
       
         
-        <p><code>formatBinaryOperator()</code> takes in an operator and a line.  It assumes that the operator is an element of <code>BINARY_OPERATORS</code> and makes sure that there is one and only one space before and after the operator.  Before it inserts spaces, however, it makes sure that the operator in question is not part of a string.</p>
-<p>This method is incomplete.</p>
+        <p>This function makes sure that there is one and only one space before and after the operators defined in <code>TWO_SPACE_OPERATORS</code>.  Before it inserts spaces, however, it makes sure that the operator in question is not part of a string.</p>
+<p>The idea behind this implementation is that, we can firstly add one space both before and after the operator, and then use <code>shortenSpaces</code> (described later) to get rid of any additional spaces.</p>
+<p>The boolean logic is much more complex than I would like.  It should be refactored at some point.</p>
 
         
-          <div class='highlight'><pre><span class="function"><span class="title">formatTwoSpaceOperator</span></span> = (operator, line) -&gt;
-  index = line.indexOf(operator)
-  <span class="keyword">if</span> notInString(index, line)
-    <span class="keyword">if</span> line[index - <span class="number">1</span>] != <span class="string">' '</span></pre></div>
+          <div class='highlight'><pre><span class="function"><span class="title">formatTwoSpaceOperator</span></span> = (line) -&gt;
+  <span class="keyword">for</span> operator <span class="keyword">in</span> TWO_SPACE_OPERATORS
+    newLine = <span class="string">''</span>
+    skipNext = <span class="literal">false</span>
+    <span class="keyword">for</span> c, i <span class="keyword">in</span> line</pre></div>
+        
+      
+        
+        <p>Test if the operator is at i</p>
+
+        
+          <div class='highlight'><pre>      <span class="keyword">if</span> (line.substr(i).indexOf(operator) == <span class="number">0</span>) <span class="keyword">and</span> (notInString i, line) <span class="keyword">and</span>
+      (<span class="keyword">not</span> ((operator.length == <span class="number">1</span>) <span class="keyword">and</span>
+        ((line[i + <span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS) <span class="keyword">or</span>
+          (line[i-<span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS))))
+        console.log operator
+        console.log (<span class="keyword">not</span> ((operator.length == <span class="number">1</span>) <span class="keyword">and</span> ((line[i + <span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS) <span class="keyword">or</span> (line[i-<span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS))))
+        newLine += <span class="string">" <span class="subst">#{operator}</span> "</span> <span class="comment"># Insert a space before and after</span>
+        skipNext = <span class="literal">true</span> <span class="keyword">if</span> operator.length == <span class="number">2</span>
+      <span class="keyword">else</span>
+        <span class="keyword">unless</span> skipNext
+          newLine += c
+        skipNext = <span class="literal">false</span>
+
+    line = shortenSpaces newLine
+
+  <span class="keyword">return</span> line</pre></div>
         
       
         
@@ -95,8 +140,10 @@ fs = require <span class="string">'fs'</span></pre></div>
   newLine = <span class="string">''</span>
   <span class="keyword">for</span> c, i <span class="keyword">in</span> line
     <span class="keyword">unless</span> notInString(i, line) <span class="keyword">and</span> (c == <span class="string">' '</span> == prevChar)
-      newLine += c
-    prevChar = c</pre></div>
+      newLine = newLine + c
+    prevChar = c
+
+  <span class="keyword">return</span> newLine</pre></div>
         
       
         
@@ -142,8 +189,7 @@ fs = require <span class="string">'fs'</span></pre></div>
 <p>Now we add spaces before and after a binary operator, using the helper function:</p>
 
         
-          <div class='highlight'><pre>        <span class="keyword">for</span> operator <span class="keyword">in</span> TWO_SPACE_OPERATORS
-          newLine = formatTwoSpaceOperator operator, newLine</pre></div>
+          <div class='highlight'><pre>        newLine = formatTwoSpaceOperator newLine</pre></div>
         
       
         
@@ -167,7 +213,12 @@ fs = require <span class="string">'fs'</span></pre></div>
 <ul>
 <li>Indentation should be formatted according to the parameters specified by the user.</li>
 </ul>
+<h3>Exports</h3>
+<p>The following exports are for testing only and should be commented out in production:</p>
 
+        
+          <div class='highlight'><pre>module.exports.shortenSpaces = shortenSpaces
+module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator</pre></div>
         
       
       <div class="fleur">h</div>

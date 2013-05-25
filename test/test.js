@@ -7,13 +7,30 @@
   assert = require('assert');
 
   describe('formatter', function() {
-    return describe('#shortenSpaces()', function() {
-      return it('should shorten all consecutive spaces into one', function() {
+    describe('#shortenSpaces()', function() {
+      it('should shorten all consecutive spaces into one', function() {
         var formattedLine, originalLine;
 
         originalLine = 'hello   derek how is  it going?';
         formattedLine = formatter.shortenSpaces(originalLine);
         return assert.strictEqual('hello derek how is it going?', formattedLine);
+      });
+      return it('should work with strings', function() {
+        var formattedLine, originalLine;
+
+        originalLine = 'for c, i in "Hello  World!"';
+        formattedLine = formatter.shortenSpaces(originalLine);
+        return assert.strictEqual('for c, i in "Hello  World!"', formattedLine);
+      });
+    });
+    return describe('#formatTwoSpaceOperator()', function() {
+      return it('should make it so that there is only\
+          one space before and after a binary operator', function() {
+        var formattedLine, originalLine;
+
+        originalLine = 'k = 1+1-  2>=3<=  4>5   <6';
+        formattedLine = formatter.formatTwoSpaceOperator(originalLine);
+        return assert.strictEqual('k = 1 + 1 - 2 >= 3 <= 4 > 5 < 6', formattedLine);
       });
     });
   });

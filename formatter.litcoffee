@@ -46,7 +46,7 @@ One-space operators.  They should have one space after.
 
 Given a line and an index, the function determines whether or not the index is inside of a CoffeeScript string.
 
-    notInString = (index, line) ->
+    inString = (index, line) ->
       for c, i in line
         if c == "'" or c == '"'
           subLine = line.substr (i + 1)
@@ -59,21 +59,41 @@ Given a line and an index, the function determines whether or not the index is i
 
       return false
 
+    notInString = (index, line) ->
+      return not inString(index, line)
+
 `getExtension()` returns the extension of a filename, excluding the dot.
 
     getExtension = (filename) ->
       i = filename.lastIndexOf '.'
       return if i < 0 then '' else filename.substr (i+1)
 
-`formatBinaryOperator()` takes in an operator and a line.  It assumes that the operator is an element of `BINARY_OPERATORS` and makes sure that there is one and only one space before and after the operator.  Before it inserts spaces, however, it makes sure that the operator in question is not part of a string.
+This function makes sure that there is one and only one space before and after the operators defined in `TWO_SPACE_OPERATORS`.  Before it inserts spaces, however, it makes sure that the operator in question is not part of a string.
 
-This method is incomplete.
+The idea behind this implementation is that, we can firstly add one space both before and after the operator, and then use `shortenSpaces` (described later) to get rid of any additional spaces.
 
-    formatTwoSpaceOperator = (operator, line) ->
-      index = line.indexOf(operator)
-      if notInString(index, line)
-        if line[index - 1] != ' '
-          1 + 1
+The boolean logic is much more complex than I would like.  It should be refactored at some point.
+
+    formatTwoSpaceOperator = (line) ->
+      for operator in TWO_SPACE_OPERATORS
+        newLine = ''
+        skipNext = false
+        for c, i in line
+          # Test if the operator is at i
+          if (line.substr(i).indexOf(operator) == 0) and (notInString i, line) and
+          (not ((operator.length == 1) and
+            ((line[i + 1] in TWO_SPACE_OPERATORS) or
+              (line[i-1] in TWO_SPACE_OPERATORS))))
+            newLine += " #{operator} " # Insert a space before and after
+            skipNext = true if operator.length == 2
+          else
+            unless skipNext
+              newLine += c
+            skipNext = false
+
+        line = shortenSpaces newLine
+
+      return line
 
 This method shortens consecutive spaces into one single space.
 
@@ -122,8 +142,7 @@ Firstly, we read the file line by line:
 
 Now we add spaces before and after a binary operator, using the helper function:
             
-            for operator in TWO_SPACE_OPERATORS
-              newLine = formatTwoSpaceOperator operator, newLine
+            newLine = formatTwoSpaceOperator newLine
 
 Do the same for single-space operators:
 
@@ -141,4 +160,7 @@ After the `forEach` completes, we have a file that is formatted line by line.  H
 
 ### Exports
 
+The following exports are for testing only and should be commented out in production:
+
     module.exports.shortenSpaces = shortenSpaces
+    module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator

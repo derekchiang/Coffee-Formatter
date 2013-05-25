@@ -39,15 +39,17 @@ Two-space operators.  These operators should have one space both before and afte
 
 One-space operators.  They should have one space after.
 
-    ONE_SPACE_OPERATORS = [':', '?', '']
+    ONE_SPACE_OPERATORS = [':', '?', ')', '}', ',']
 
 
 ### Helper Functions
 
-Given a line and an index, the function determines whether or not the index is inside of a CoffeeScript string.
+Given a line and an index, the function determines whether or not the index is inside of a CoffeeScript string or part of a CoffeeScript comment.
 
-    inString = (index, line) ->
+    inStringOrComment = (index, line) ->
       for c, i in line
+        if c == '#' and i <= index
+          return true
         if c == "'" or c == '"'
           subLine = line.substr (i + 1)
           for cc, ii in subLine
@@ -55,12 +57,14 @@ Given a line and an index, the function determines whether or not the index is i
               if i <= index <= (ii + i + 1)
                 return true
               else
-                return inString (index - (ii + 1)), (line.substr (ii + 1))
+                return inStringOrComment (index - (ii + 1)), (line.substr (ii + 1))
 
       return false
 
-    notInString = (index, line) ->
-      return not inString(index, line)
+The negation:
+
+    notInStringOrComment = (index, line) ->
+      return not inStringOrComment(index, line)
 
 `getExtension()` returns the extension of a filename, excluding the dot.
 
@@ -80,7 +84,7 @@ The boolean logic is much more complex than I would like.  It should be refactor
         skipNext = false
         for c, i in line
           # Test if the operator is at i
-          if (line.substr(i).indexOf(operator) == 0) and (notInString i, line) and
+          if (line.substr(i).indexOf(operator) == 0) and (notInStringOrComment i, line) and
           (not ((operator.length == 1) and
             ((line[i + 1] in TWO_SPACE_OPERATORS) or
               (line[i-1] in TWO_SPACE_OPERATORS))))
@@ -97,6 +101,28 @@ The boolean logic is much more complex than I would like.  It should be refactor
 
 This method shortens consecutive spaces into one single space.
 
+    formatOneSpaceOperator = (line) ->
+      for operator in ONE_SPACE_OPERATORS
+        newLine = ''
+        for c, i in line
+          if (line.substr(i).indexOf(operator) == 0) and (notInStringOrComment i, line) and
+
+One exception has to be accounted for, which is experssion of the form `Object::property`
+
+          (line.substr(i).indexOf('::') != 0) and
+          (line.substr(i-1).indexOf('::') != 0) and
+
+Another exception: `if (options = arguments[i])?`
+
+          (line.substr(i+1).indexOf('?') != 0)
+            newLine += "#{operator} " # Insert a space after
+          else
+            newLine += c
+
+        line = shortenSpaces newLine
+
+      return line
+
 Note that the function should not shorten indentations.
 
     shortenSpaces = (line) ->
@@ -111,9 +137,7 @@ Note that the function should not shorten indentations.
           break
 
       for c, i in line
-        unless notInString(i, line) and (c == ' ' == prevChar)
-          console.log notInString(i, line)
-          console.log c
+        unless notInStringOrComment(i, line) and (c == ' ' == prevChar)
           newLine = newLine + c
         prevChar = c
 
@@ -145,26 +169,37 @@ Firstly, we read the file line by line:
       else
         file = ''
 
-        new Lazy(fs.createReadStream filename, encoding: 'utf8')
-          .lines
+        lazy = new Lazy(fs.createReadStream filename, encoding: 'utf8')
+
+        lazy.on 'end', ->
+          fs.writeFileSync filename, file
+
+        lazy.lines
           .forEach (line) ->
             line = String(line)
-            newLine = line
+
+For some weird reason regarding IO, empty line is read as '0'. Therefore I have to check against 0.  This may cause weird bugs if a line actually contains only '0'.
+            
+            if line != '0'
+              newLine = line
 
 `newLine` is used to hold a processed line.  `file` is used to hold the processed file.
 
 Now we add spaces before and after a binary operator, using the helper function:
             
-            newLine = formatTwoSpaceOperator newLine
+              newLine = formatTwoSpaceOperator newLine
 
 Do the same for single-space operators:
 
-            newLine = formatOneSpaceOperator newLine
+              newLine = formatOneSpaceOperator newLine
 
 Shorten any consecutive spaces into a single space:
 
-            newLine = shortenSpaces newLine
-            file += newLine + '\n'
+              newLine = shortenSpaces newLine
+
+              file += newLine + '\n'
+            else
+              file += '\n'
 
 After the `forEach` completes, we have a file that is formatted line by line.  However, a comprehensive formatter needs to consider the code in a block level.  Specifically:
 
@@ -178,4 +213,5 @@ The following exports are for testing only and should be commented out in produc
 
     module.exports.shortenSpaces = shortenSpaces
     module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator
-    module.exports.notInString = notInString
+    module.exports.notInStringOrComment = notInStringOrComment
+    module.exports.formatOneSpaceOperator = formatOneSpaceOperator

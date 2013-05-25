@@ -206,8 +206,6 @@
 
   })();
 
-  module.exports["new"] = function() {
-    return new Manager;
-  };
+  module.exports["new"] = function() {};
 
 }).call(this);

@@ -62,29 +62,36 @@ fs = require <span class="string">'fs'</span></pre></div>
         <p>One-space operators.  They should have one space after.</p>
 
         
-          <div class='highlight'><pre>ONE_SPACE_OPERATORS = [<span class="string">':'</span>, <span class="string">'?'</span>, <span class="string">''</span>]</pre></div>
+          <div class='highlight'><pre>ONE_SPACE_OPERATORS = [<span class="string">':'</span>, <span class="string">'?'</span>, <span class="string">')'</span>, <span class="string">'}'</span>, <span class="string">','</span>]</pre></div>
         
       
         
         <h3>Helper Functions</h3>
-<p>Given a line and an index, the function determines whether or not the index is inside of a CoffeeScript string.</p>
+<p>Given a line and an index, the function determines whether or not the index is inside of a CoffeeScript string or part of a CoffeeScript comment.</p>
 
         
-          <div class='highlight'><pre><span class="function"><span class="title">inString</span></span> = (index, line) -&gt;
+          <div class='highlight'><pre><span class="function"><span class="title">inStringOrComment</span></span> = (index, line) -&gt;
   <span class="keyword">for</span> c, i <span class="keyword">in</span> line
+    <span class="keyword">if</span> c == <span class="string">'#'</span> <span class="keyword">and</span> i &lt;= index
+      <span class="keyword">return</span> <span class="literal">true</span>
     <span class="keyword">if</span> c == <span class="string">"'"</span> <span class="keyword">or</span> c == <span class="string">'"'</span>
       subLine = line.substr (i + <span class="number">1</span>)
       <span class="keyword">for</span> cc, ii <span class="keyword">in</span> subLine
         <span class="keyword">if</span> cc == c
-          <span class="keyword">if</span> i &lt;= index &lt;= ii
+          <span class="keyword">if</span> i &lt;= index &lt;= (ii + i + <span class="number">1</span>)
             <span class="keyword">return</span> <span class="literal">true</span>
           <span class="keyword">else</span>
-            <span class="keyword">return</span> notInString (index - (ii + <span class="number">1</span>)), (line.substr (ii + <span class="number">1</span>))
+            <span class="keyword">return</span> inStringOrComment (index - (ii + <span class="number">1</span>)), (line.substr (ii + <span class="number">1</span>))
 
-  <span class="keyword">return</span> <span class="literal">false</span>
+  <span class="keyword">return</span> <span class="literal">false</span></pre></div>
+        
+      
+        
+        <p>The negation:</p>
 
-<span class="function"><span class="title">notInString</span></span> = (index, line) -&gt;
-  <span class="keyword">return</span> <span class="keyword">not</span> inString(index, line)</pre></div>
+        
+          <div class='highlight'><pre><span class="function"><span class="title">notInStringOrComment</span></span> = (index, line) -&gt;
+  <span class="keyword">return</span> <span class="keyword">not</span> inStringOrComment(index, line)</pre></div>
         
       
         
@@ -113,12 +120,10 @@ fs = require <span class="string">'fs'</span></pre></div>
         <p>Test if the operator is at i</p>
 
         
-          <div class='highlight'><pre>      <span class="keyword">if</span> (line.substr(i).indexOf(operator) == <span class="number">0</span>) <span class="keyword">and</span> (notInString i, line) <span class="keyword">and</span>
+          <div class='highlight'><pre>      <span class="keyword">if</span> (line.substr(i).indexOf(operator) == <span class="number">0</span>) <span class="keyword">and</span> (notInStringOrComment i, line) <span class="keyword">and</span>
       (<span class="keyword">not</span> ((operator.length == <span class="number">1</span>) <span class="keyword">and</span>
         ((line[i + <span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS) <span class="keyword">or</span>
           (line[i-<span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS))))
-        console.log operator
-        console.log (<span class="keyword">not</span> ((operator.length == <span class="number">1</span>) <span class="keyword">and</span> ((line[i + <span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS) <span class="keyword">or</span> (line[i-<span class="number">1</span>] <span class="keyword">in</span> TWO_SPACE_OPERATORS))))
         newLine += <span class="string">" <span class="subst">#{operator}</span> "</span> <span class="comment"># Insert a space before and after</span>
         skipNext = <span class="literal">true</span> <span class="keyword">if</span> operator.length == <span class="number">2</span>
       <span class="keyword">else</span>
@@ -135,11 +140,52 @@ fs = require <span class="string">'fs'</span></pre></div>
         <p>This method shortens consecutive spaces into one single space.</p>
 
         
+          <div class='highlight'><pre><span class="function"><span class="title">formatOneSpaceOperator</span></span> = (line) -&gt;
+  <span class="keyword">for</span> operator <span class="keyword">in</span> ONE_SPACE_OPERATORS
+    newLine = <span class="string">''</span>
+    <span class="keyword">for</span> c, i <span class="keyword">in</span> line
+      <span class="keyword">if</span> (line.substr(i).indexOf(operator) == <span class="number">0</span>) <span class="keyword">and</span> (notInStringOrComment i, line) <span class="keyword">and</span></pre></div>
+        
+      
+        
+        <p>One exception has to be accounted for, which is experssion of the form <code>Object::property</code></p>
+
+        
+          <div class='highlight'><pre>      (line.substr(i).indexOf(<span class="string">'::'</span>) != <span class="number">0</span>) <span class="keyword">and</span>
+      (line.substr(i-<span class="number">1</span>).indexOf(<span class="string">'::'</span>) != <span class="number">0</span>) <span class="keyword">and</span></pre></div>
+        
+      
+        
+        <p>Another exception: <code>if (options = arguments[i])?</code></p>
+
+        
+          <div class='highlight'><pre>      (line.substr(i+<span class="number">1</span>).indexOf(<span class="string">'?'</span>) != <span class="number">0</span>)
+        newLine += <span class="string">"<span class="subst">#{operator}</span> "</span> <span class="comment"># Insert a space after</span>
+      <span class="keyword">else</span>
+        newLine += c
+
+    line = shortenSpaces newLine
+
+  <span class="keyword">return</span> line</pre></div>
+        
+      
+        
+        <p>Note that the function should not shorten indentations.</p>
+
+        
           <div class='highlight'><pre><span class="function"><span class="title">shortenSpaces</span></span> = (line) -&gt;
   prevChar = <span class="literal">null</span>
   newLine = <span class="string">''</span>
+
   <span class="keyword">for</span> c, i <span class="keyword">in</span> line
-    <span class="keyword">unless</span> notInString(i, line) <span class="keyword">and</span> (c == <span class="string">' '</span> == prevChar)
+    <span class="keyword">if</span> c == <span class="string">' '</span>
+      newLine += c
+    <span class="keyword">else</span>
+      line = line.substring(i)
+      <span class="keyword">break</span>
+
+  <span class="keyword">for</span> c, i <span class="keyword">in</span> line
+    <span class="keyword">unless</span> notInStringOrComment(i, line) <span class="keyword">and</span> (c == <span class="string">' '</span> == prevChar)
       newLine = newLine + c
     prevChar = c
 
@@ -178,10 +224,22 @@ fs = require <span class="string">'fs'</span></pre></div>
           <div class='highlight'><pre>  <span class="keyword">else</span>
     file = <span class="string">''</span>
 
-    <span class="keyword">new</span> Lazy(fs.createReadStream filename, encoding: <span class="string">'utf8'</span>)
-      .lines
+    lazy = <span class="keyword">new</span> Lazy(fs.createReadStream filename, encoding: <span class="string">'utf8'</span>)
+
+    lazy.<span class="literal">on</span> <span class="string">'end'</span>, -&gt;
+      fs.writeFileSync filename, file
+
+    lazy.lines
       .forEach (line) -&gt;
-        newLine = line</pre></div>
+        line = String(line)</pre></div>
+        
+      
+        
+        <p>For some weird reason regarding IO, empty line is read as &#39;0&#39;. Therefore I have to check against 0.  This may cause weird bugs if a line actually contains only &#39;0&#39;.</p>
+
+        
+          <div class='highlight'><pre>        <span class="keyword">if</span> line != <span class="string">'0'</span>
+          newLine = line</pre></div>
         
       
         
@@ -189,23 +247,25 @@ fs = require <span class="string">'fs'</span></pre></div>
 <p>Now we add spaces before and after a binary operator, using the helper function:</p>
 
         
-          <div class='highlight'><pre>        newLine = formatTwoSpaceOperator newLine</pre></div>
+          <div class='highlight'><pre>          newLine = formatTwoSpaceOperator newLine</pre></div>
         
       
         
         <p>Do the same for single-space operators:</p>
 
         
-          <div class='highlight'><pre>        <span class="keyword">for</span> operator <span class="keyword">in</span> ONE_SPACE_OPERATORS
-          newLine = formatOneSpaceOperator operator, newLine</pre></div>
+          <div class='highlight'><pre>          newLine = formatOneSpaceOperator newLine</pre></div>
         
       
         
         <p>Shorten any consecutive spaces into a single space:</p>
 
         
-          <div class='highlight'><pre>        newLine = shortenSpaces newLine
-        file += newLine</pre></div>
+          <div class='highlight'><pre>          newLine = shortenSpaces newLine
+
+          file += newLine + <span class="string">'\n'</span>
+        <span class="keyword">else</span>
+          file += <span class="string">'\n'</span></pre></div>
         
       
         
@@ -213,12 +273,16 @@ fs = require <span class="string">'fs'</span></pre></div>
 <ul>
 <li>Indentation should be formatted according to the parameters specified by the user.</li>
 </ul>
+<p>This haven&#39;t been implemented yet.</p>
 <h3>Exports</h3>
+<h4>Test Only</h4>
 <p>The following exports are for testing only and should be commented out in production:</p>
 
         
-          <div class='highlight'><pre>module.exports.shortenSpaces = shortenSpaces
-module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator</pre></div>
+          <div class='highlight'><pre>exports.shortenSpaces = shortenSpaces
+exports.formatTwoSpaceOperator = formatTwoSpaceOperator
+exports.notInStringOrComment = notInStringOrComment
+exports.formatOneSpaceOperator = formatOneSpaceOperator</pre></div>
         
       
       <div class="fleur">h</div>

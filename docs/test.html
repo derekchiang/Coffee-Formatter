@@ -35,19 +35,19 @@ describe '#shortenSpaces()', -&gt;
   it 'should shorten all consecutive spaces into one', -&gt;
     originalLine = 'hello   derek how is  it going?'
     formattedLine = formatter.shortenSpaces originalLine
-    assert.strictEqual 'hello derek how is it going?',
+    assert.strictEqual 'hello derek how is it going?', 
       formattedLine
 
   it 'should work with strings', -&gt;
     originalLine = 'for c, i in "Hello  World!"'
     formattedLine = formatter.shortenSpaces originalLine
-    assert.strictEqual originalLine,
+    assert.strictEqual originalLine, 
       formattedLine
 
   it 'should not shorten indentations', -&gt;
     originalLine = '    for c, i  in "Hello  World"'
     formattedLine = formatter.shortenSpaces originalLine
-    assert.strictEqual '    for c, i in "Hello  World"',
+    assert.strictEqual '    for c, i in "Hello  World"', 
       formattedLine
 
 describe '#formatTwoSpaceOperator()', -&gt;
@@ -55,7 +55,7 @@ describe '#formatTwoSpaceOperator()', -&gt;
     one space before and after a binary operator', -&gt;
     originalLine = 'k = 1+1-  2&gt;=3&lt;=  4&gt;5   &lt;6'
     formattedLine = formatter.formatTwoSpaceOperator originalLine
-    assert.strictEqual 'k = 1 + 1 - 2 &gt;= 3 &lt;= 4 &gt; 5 &lt; 6',
+    assert.strictEqual 'k = 1 + 1 - 2 &gt;= 3 &lt;= 4 &gt; 5 &lt; 6', 
       formattedLine
 
 describe '#formatOneSpaceOperator()', -&gt;
@@ -63,10 +63,10 @@ describe '#formatOneSpaceOperator()', -&gt;
     one space after certain operators', -&gt;
     originalLine = 'k = (a,b)-&gt; if b?  return a'
     formattedLine = formatter.formatOneSpaceOperator originalLine
-    assert.strictEqual 'k = (a, b) -&gt; if b? return a',
+    assert.strictEqual 'k = (a, b) -&gt; if b? return a', 
       formattedLine
 
-describe '#notInString()', -&gt;
+describe '#notInStringOrComment()', -&gt;
   it 'should detect if a char is in a string', -&gt;
     originalLine = 'for c, i in "Hello World"'
     inStringIndex = originalLine.indexOf('Hello')</pre></div>
@@ -76,7 +76,7 @@ describe '#notInString()', -&gt;
         <p>console.log inStringIndex</p>
 
         
-          <div class='highlight'><pre>    assert.strictEqual (formatter.notInString inStringIndex, originalLine),
+          <div class='highlight'><pre>    assert.strictEqual (formatter.notInStringOrComment inStringIndex, originalLine) , 
       <span class="literal">false</span></pre></div>
         
       

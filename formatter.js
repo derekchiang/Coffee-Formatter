@@ -154,12 +154,12 @@
     }
   }
 
-  module.exports.shortenSpaces = shortenSpaces;
+  exports.shortenSpaces = shortenSpaces;
 
-  module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator;
+  exports.formatTwoSpaceOperator = formatTwoSpaceOperator;
 
-  module.exports.notInStringOrComment = notInStringOrComment;
+  exports.notInStringOrComment = notInStringOrComment;
 
-  module.exports.formatOneSpaceOperator = formatOneSpaceOperator;
+  exports.formatOneSpaceOperator = formatOneSpaceOperator;
 
 }).call(this);

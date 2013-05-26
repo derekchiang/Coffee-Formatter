@@ -209,9 +209,17 @@ This haven't been implemented yet.
 
 ### Exports
 
+#### Test Only
+
 The following exports are for testing only and should be commented out in production:
 
-    module.exports.shortenSpaces = shortenSpaces
-    module.exports.formatTwoSpaceOperator = formatTwoSpaceOperator
-    module.exports.notInStringOrComment = notInStringOrComment
-    module.exports.formatOneSpaceOperator = formatOneSpaceOperator
+    exports.shortenSpaces = shortenSpaces
+    exports.formatTwoSpaceOperator = formatTwoSpaceOperator
+    exports.notInStringOrComment = notInStringOrComment
+    exports.formatOneSpaceOperator = formatOneSpaceOperator
+
+#### Production
+
+### TODO
+
+Get rid of `optimist` and possibly also `lazy`.

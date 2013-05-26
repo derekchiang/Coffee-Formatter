@@ -217,9 +217,3 @@ The following exports are for testing only and should be commented out in produc
     exports.formatTwoSpaceOperator = formatTwoSpaceOperator
     exports.notInStringOrComment = notInStringOrComment
     exports.formatOneSpaceOperator = formatOneSpaceOperator
-
-#### Production
-
-### TODO
-
-Get rid of `optimist` and possibly also `lazy`.

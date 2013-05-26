@@ -4,7 +4,19 @@ A formatter for CoffeeScript
 
 ## Status
 
-The project is under development and is not usable at this moment.  Please check back later.
+The first version of this project is completed.  I will publish it on npm ASAP.
+
+## Usage
+
+	node formatter.js [Your Files]
+
+Or if you want to use `coffee`
+
+	coffee formatter.litcoffee [Your Files]
+
+Example:
+
+	coffee formatter.litcoffee sample/vdvc.coffee
 
 ## Things to note
 

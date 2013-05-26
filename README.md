@@ -25,3 +25,8 @@ This project is written in Literate CoffeeScript (extension '.litcoffee'), which
 To read the code, it's suggested to go to `docs/` folder.  For example, `docs/formatter.html` contains properly highlighted code for `formatter.litcoffee`.
 
 To run the test suite, install [Mocha](https://github.com/visionmedia/mocha) and run `mocha` in the base directory.
+
+## TODO
+
+1. Get rid of external dependencies.
+2. Make a build script.

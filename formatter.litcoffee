@@ -116,6 +116,7 @@ This method shortens consecutive spaces into one single space.
       for operator in ONE_SPACE_OPERATORS
         newLine = ''
         for c, i in line
+          thisCharAndNextOne = line.substr(i, 2)
           if (line.substr(i).indexOf(operator) == 0) and
           (notInStringOrComment i, line) and
 
@@ -128,9 +129,12 @@ Another exception: `if (options = arguments[i])?`
 
           (line.substr(i+1).indexOf('?') != 0) and
 
-And also ")," and ")." and ")[" shouldn't be separated by space:
+And also ")," ")." ")[" and "))" shouldn't be separated by space:
 
-          (line.substr(i, 2) != ")," and line.substr(i, 2) != ")." and line.substr(i, 2) != ")[")
+          (thisCharAndNextOne isnt "),") and
+          (thisCharAndNextOne isnt ").") and
+          (thisCharAndNextOne isnt ")[") and
+          (thisCharAndNextOne isnt "))")
             newLine += "#{operator} " # Insert a space after
           else
             newLine += c

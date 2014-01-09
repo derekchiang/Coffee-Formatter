@@ -93,13 +93,14 @@
   };
 
   formatOneSpaceOperator = function(line) {
-    var c, i, newLine, operator, _i, _j, _len, _len1;
+    var c, i, newLine, operator, thisCharAndNextOne, _i, _j, _len, _len1;
     for (_i = 0, _len = ONE_SPACE_OPERATORS.length; _i < _len; _i++) {
       operator = ONE_SPACE_OPERATORS[_i];
       newLine = '';
       for (i = _j = 0, _len1 = line.length; _j < _len1; i = ++_j) {
         c = line[i];
-        if ((line.substr(i).indexOf(operator) === 0) && (notInStringOrComment(i, line)) && (line.substr(i).indexOf('::') !== 0) && (line.substr(i - 1).indexOf('::') !== 0) && (line.substr(i + 1).indexOf('?') !== 0) && (line.substr(i, 2) !== ")," && line.substr(i, 2) !== ")." && line.substr(i, 2) !== ")[")) {
+        thisCharAndNextOne = line.substr(i, 2);
+        if ((line.substr(i).indexOf(operator) === 0) && (notInStringOrComment(i, line)) && (line.substr(i).indexOf('::') !== 0) && (line.substr(i - 1).indexOf('::') !== 0) && (line.substr(i + 1).indexOf('?') !== 0) && (thisCharAndNextOne !== "),") && (thisCharAndNextOne !== ").") && (thisCharAndNextOne !== ")[") && (thisCharAndNextOne !== "))")) {
           newLine += "" + operator + " ";
         } else {
           newLine += c;

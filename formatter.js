@@ -99,7 +99,7 @@
       newLine = '';
       for (i = _j = 0, _len1 = line.length; _j < _len1; i = ++_j) {
         c = line[i];
-        if ((line.substr(i).indexOf(operator) === 0) && (notInStringOrComment(i, line)) && (line.substr(i).indexOf('::') !== 0) && (line.substr(i - 1).indexOf('::') !== 0) && (line.substr(i + 1).indexOf('?') !== 0) && (line.substr(i, 2) !== ")," && line.substr(i, 2) !== ").")) {
+        if ((line.substr(i).indexOf(operator) === 0) && (notInStringOrComment(i, line)) && (line.substr(i).indexOf('::') !== 0) && (line.substr(i - 1).indexOf('::') !== 0) && (line.substr(i + 1).indexOf('?') !== 0) && (line.substr(i, 2) !== ")," && line.substr(i, 2) !== ")." && line.substr(i, 2) !== ")[")) {
           newLine += "" + operator + " ";
         } else {
           newLine += c;

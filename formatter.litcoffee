@@ -119,7 +119,7 @@ This method shortens consecutive spaces into one single space.
           if (line.substr(i).indexOf(operator) == 0) and
           (notInStringOrComment i, line) and
 
-One exception has to be accounted for, which is experssion of the form `Object::property`
+One exception has to be accounted for, which is expression of the form `Object::property`
 
           (line.substr(i).indexOf('::') != 0) and
           (line.substr(i-1).indexOf('::') != 0) and
@@ -128,9 +128,9 @@ Another exception: `if (options = arguments[i])?`
 
           (line.substr(i+1).indexOf('?') != 0) and
 
-And also ")," and ")." shouldn't be separated by space:
+And also ")," and ")." and ")[" shouldn't be separated by space:
 
-          (line.substr(i, 2) != ")," and line.substr(i, 2) != ").")
+          (line.substr(i, 2) != ")," and line.substr(i, 2) != ")." and line.substr(i, 2) != ")[")
             newLine += "#{operator} " # Insert a space after
           else
             newLine += c
@@ -198,14 +198,14 @@ Firstly, we read the file line by line:
             line = String(line)
 
 For some weird reason regarding IO, empty line is read as '0'. Therefore I have to check against 0.  This may cause weird bugs if a line actually contains only '0'.
-            
+
             if line != '0'
               newLine = line
 
 `newLine` is used to hold a processed line.  `file` is used to hold the processed file.
 
 Now we add spaces before and after a binary operator, using the helper function:
-            
+
               newLine = formatTwoSpaceOperator newLine
 
 Do the same for single-space operators:

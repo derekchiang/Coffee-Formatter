@@ -51,6 +51,12 @@ describe '#formatOneSpaceOperator()', ->
     assert.strictEqual 'f = b()[0]',
       formattedLine
 
+  it 'should make it so that there is no space between "))"', ->
+    originalLine = 'f(b())'
+    formattedLine = formatter.formatOneSpaceOperator originalLine
+    assert.strictEqual 'f(b())',
+      formattedLine
+
 describe '#notInStringOrComment()', ->
   it 'should detect if a char is in a string', ->
     originalLine = 'for c, i in "Hello World"'

@@ -47,11 +47,17 @@
       formattedLine = formatter.formatOneSpaceOperator(originalLine);
       return assert.strictEqual('k = (a, b) -> if b? return a', formattedLine);
     });
-    return it('should make it so that there is no space between ")["', function() {
+    it('should make it so that there is no space between ")["', function() {
       var formattedLine, originalLine;
       originalLine = 'f  =  b()[0]';
       formattedLine = formatter.formatOneSpaceOperator(originalLine);
       return assert.strictEqual('f = b()[0]', formattedLine);
+    });
+    return it('should make it so that there is no space between "))"', function() {
+      var formattedLine, originalLine;
+      originalLine = 'f(b())';
+      formattedLine = formatter.formatOneSpaceOperator(originalLine);
+      return assert.strictEqual('f(b())', formattedLine);
     });
   });
 

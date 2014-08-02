@@ -6,7 +6,7 @@
 
 # Then run `mocha` in the base directory.
 
-formatter = require '../formatter'
+formatter = require '../lib/formatter'
 assert = require 'assert'
 
 describe 'formatter', ->

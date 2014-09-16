@@ -2,7 +2,7 @@
   "name": "coffee-formatter",
   "version": "0.1.0",
   "description": "A CoffeeScript formatter",
-  "main": "formatter.js",
+  "main": "lib/formatter.js",
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -11,7 +11,19 @@
     "lazy": "~1.0.11",
     "optimist": "~0.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "coffee-script": "^1.7.1",
+    "coffeelint": "^1.5.2",
+    "docco": "^0.6.3",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-coffeelint": "0.0.13",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-coffee": "^0.10.1",
+    "grunt-docco": "^0.3.3",
+    "grunt-simple-mocha": "^0.4.0",
+    "mocha": "^1.21.3"
+  },
   "scripts": {
     "test": "mocha"
   },
@@ -25,7 +37,5 @@
     "auto-format"
   ],
   "author": "Derek Chiang",
-  "license": "MIT",
-  "readmeFilename": "README.md",
-  "gitHead": "be431f54e0227f5d146f38912bec642ff9f0016b"
+  "license": "MIT"
 }

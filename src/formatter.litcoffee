@@ -97,8 +97,8 @@ The boolean logic is much more complex than I would like.  It should be refactor
           # Test if the operator is at i
           if (line.substr(i).indexOf(operator) == 0) and (notInStringOrComment i, line) and
           (not ((operator.length == 1) and
-            ((line[i + 1] in TWO_SPACE_OPERATORS) or
-              (line[i-1] in TWO_SPACE_OPERATORS))))
+          ((line[i + 1] in TWO_SPACE_OPERATORS) or
+          (line[i-1] in TWO_SPACE_OPERATORS))))
             newLine += " #{operator} " # Insert a space before and after
             skipNext = true if operator.length == 2
           else

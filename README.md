@@ -29,7 +29,6 @@ To run the test suite, install [Mocha](https://github.com/visionmedia/mocha) and
 ## TODO
 
 1. Get rid of external dependencies.
-2. Make a build script.
 
 
 ## License

@@ -34,7 +34,7 @@ We define a set of constants, including:
 
 Two-space operators.  These operators should have one space both before and after.
 
-    TWO_SPACE_OPERATORS = ['=', '+=', '-=', '==', '<=', '>=',
+    TWO_SPACE_OPERATORS = ['?=", '=', '+=', '-=', '==', '<=', '>=',
                         '>', "<", '+', '-', '*', '/']
 
 One-space operators.  They should have one space after.
@@ -132,6 +132,7 @@ Another exception: `if (options = arguments[i])?`
 And also ")," ")." ")[" and "))" shouldn't be separated by space:
 
           (thisCharAndNextOne isnt "),") and
+          (thisCharAndNextOne isnt ")(") and
           (thisCharAndNextOne isnt ").") and
           (thisCharAndNextOne isnt ")[") and
           (thisCharAndNextOne isnt "))")
